@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export type Preference = {
@@ -34,17 +33,17 @@ export function PreferenceSelector({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+      <h3 className="text-sm font-medium">{title}</h3>
       <div className="flex flex-wrap gap-2">
         {preferences.map((preference) => (
           <button
             key={preference.id}
             onClick={() => togglePreference(preference.id)}
             className={cn(
-              'preference-chip',
+              'rounded-full px-3 py-1 text-sm font-medium transition-colors',
               selectedPreferences.includes(preference.id)
-                ? 'preference-chip-active'
-                : 'preference-chip-inactive'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
             )}
             type="button"
           >

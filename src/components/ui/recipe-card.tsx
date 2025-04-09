@@ -1,182 +1,96 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-export type Recipe = {
+type Recipe = {
   id: string;
   title: string;
-  description: string;
-  preparationTime: string;
-  cookingTime: string;
+  prepTime: number;
+  cookTime: number;
   servings: number;
+  description: string;
   tags: string[];
-  ingredients?: string[];
-  instructions?: string[];
 };
+
+const SAMPLE_RECIPES: Recipe[] = [
+  {
+    id: '1',
+    title: 'Mediterranean Quinoa Bowl',
+    prepTime: 15,
+    cookTime: 20,
+    servings: 2,
+    description: 'Fresh, nutritious bowl with Mediterranean flavors',
+    tags: ['Vegetarian', 'Mediterranean', 'High-Protein'],
+  },
+  {
+    id: '2',
+    title: 'Quick Chickpea Curry',
+    prepTime: 10,
+    cookTime: 25,
+    servings: 4,
+    description: 'Fast and protein-packed vegetarian curry',
+    tags: ['Vegetarian', 'Indian', 'High-Protein'],
+  },
+  {
+    id: '3',
+    title: 'Avocado & Black Bean Wrap',
+    prepTime: 10,
+    cookTime: 0,
+    servings: 2,
+    description: 'Simple, nutritious lunch option ready in minutes',
+    tags: ['Vegan', 'Mexican', 'Quick'],
+  },
+];
 
 interface RecipeCardProps {
   recipe: Recipe;
   className?: string;
-  onViewDetails?: (id: string) => void;
-  onAddToGroceryList?: (id: string) => void;
-  expanded?: boolean;
 }
 
-export function RecipeCard({
-  recipe,
-  className,
-  onViewDetails,
-  onAddToGroceryList,
-  expanded = false,
-}: RecipeCardProps) {
+export function RecipeCard({ recipe, className }: RecipeCardProps) {
   return (
-    <Card className={cn('recipe-card animate-fade-in', className)}>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg font-bold">{recipe.title}</CardTitle>
+    <div className={cn('bg-card border border-border rounded-lg overflow-hidden shadow-sm', className)}>
+      <div className="p-4 space-y-3">
+        <h3 className="font-semibold">{recipe.title}</h3>
+        <div className="flex items-center text-xs text-muted-foreground space-x-2">
+          <span>{recipe.prepTime} min prep</span>
+          <span>•</span>
+          <span>{recipe.cookTime} min cook</span>
+          <span>•</span>
+          <span>{recipe.servings} servings</span>
         </div>
-        <CardDescription className="text-sm mt-1">
-          {recipe.preparationTime} prep · {recipe.cookingTime} cook · {recipe.servings} servings
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 pb-3">
-        <p className="text-sm text-muted-foreground">{recipe.description}</p>
-        <div className="flex flex-wrap gap-1.5">
+        <p className="text-sm">{recipe.description}</p>
+        
+        <div className="flex flex-wrap gap-1 mt-2">
           {recipe.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
+            <span 
+              key={tag} 
+              className="text-xs font-medium px-2 py-0.5 rounded-md bg-muted"
+            >
               {tag}
-            </Badge>
+            </span>
           ))}
         </div>
-
-        {expanded && recipe.ingredients && (
-          <div className="mt-4 space-y-2">
-            <h4 className="font-medium text-sm">Ingredients</h4>
-            <ul className="space-y-1 text-sm pl-5 list-disc">
-              {recipe.ingredients.map((ingredient, idx) => (
-                <li key={idx}>{ingredient}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {expanded && recipe.instructions && (
-          <div className="mt-4 space-y-2">
-            <h4 className="font-medium text-sm">Instructions</h4>
-            <ol className="space-y-1 text-sm pl-5 list-decimal">
-              {recipe.instructions.map((step, idx) => (
-                <li key={idx} className="ml-1 pl-1">
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex gap-2 pt-1">
-        {!expanded && onViewDetails && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onViewDetails(recipe.id)}
-            className="text-xs h-8"
-          >
-            View Recipe
-          </Button>
-        )}
-        {onAddToGroceryList && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onAddToGroceryList(recipe.id)}
-            className="text-xs h-8"
-          >
-            Add to Grocery List
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+        
+        <div className="flex justify-between mt-4 pt-2">
+          <Button variant="outline" size="sm">View Recipe</Button>
+          <Button variant="secondary" size="sm">Add to Grocery List</Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export function RecipeList({ className }: { className?: string }) {
-  const sampleRecipes: Recipe[] = [
-    {
-      id: '1',
-      title: 'Mediterranean Quinoa Bowl',
-      description: 'Fresh and nutritious bowl with Mediterranean flavors',
-      preparationTime: '15 min',
-      cookingTime: '20 min',
-      servings: 2,
-      tags: ['Vegetarian', 'Mediterranean', 'High-Protein'],
-      ingredients: [
-        '1 cup quinoa, rinsed',
-        '2 cups vegetable broth',
-        '1 cucumber, diced',
-        '1 cup cherry tomatoes, halved',
-        '1/2 cup kalamata olives, pitted',
-        '1/2 cup feta cheese, crumbled',
-        '1/4 cup red onion, finely diced',
-        '2 tbsp olive oil',
-        '1 tbsp lemon juice',
-        '1 tsp dried oregano',
-        'Salt and pepper to taste',
-      ],
-      instructions: [
-        'Cook quinoa in vegetable broth according to package instructions.',
-        'While quinoa cooks, prepare vegetables and combine in a large bowl.',
-        'Whisk together olive oil, lemon juice, oregano, salt, and pepper.',
-        'Once quinoa is cooked and slightly cooled, add to the bowl with vegetables.',
-        'Pour dressing over the salad and toss gently to combine.',
-        'Top with crumbled feta cheese and serve at room temperature or chilled.',
-      ],
-    },
-    {
-      id: '2',
-      title: 'Quick Chickpea Curry',
-      description: 'Flavorful and protein-packed vegetarian curry',
-      preparationTime: '10 min',
-      cookingTime: '25 min',
-      servings: 4,
-      tags: ['Vegetarian', 'Indian', 'High-Protein'],
-    },
-    {
-      id: '3',
-      title: 'Avocado & Black Bean Wrap',
-      description: 'Simple, nutritious lunch option ready in minutes',
-      preparationTime: '10 min',
-      cookingTime: '0 min',
-      servings: 2,
-      tags: ['Vegan', 'Mexican', 'Quick'],
-    },
-  ];
-
-  const [expandedRecipe, setExpandedRecipe] = React.useState<string | null>(null);
-
-  const handleViewDetails = (id: string) => {
-    setExpandedRecipe(id === expandedRecipe ? null : id);
-  };
-
-  const handleAddToGroceryList = (id: string) => {
-    console.log(`Added recipe ${id} to grocery list`);
-    // In a real app, this would add ingredients to a grocery list
-  };
-
   return (
-    <div className={cn('space-y-6', className)}>
-      <h2 className="text-lg font-semibold">Suggested Recipes</h2>
-      <div className="space-y-4">
-        {sampleRecipes.map((recipe) => (
-          <RecipeCard
-            key={recipe.id}
-            recipe={recipe}
-            onViewDetails={handleViewDetails}
-            onAddToGroceryList={handleAddToGroceryList}
-            expanded={recipe.id === expandedRecipe}
-          />
+    <div className={cn('space-y-4', className)}>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Suggested Recipes</h2>
+      </div>
+      <div className="grid gap-4">
+        {SAMPLE_RECIPES.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
       </div>
     </div>

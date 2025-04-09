@@ -1,96 +1,44 @@
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { SendIcon } from 'lucide-react';
 
-export interface PromptProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onSubmit'> {
-  className?: string;
+interface PromptFormProps {
   onSubmit: (value: string) => void;
+  className?: string;
+  placeholder?: string;
 }
 
-export const PromptForm = React.forwardRef<HTMLTextAreaElement, PromptProps>(
-  ({ className, onSubmit, ...props }, ref) => {
-    const [input, setInput] = React.useState("");
-    const inputRef = React.useRef<HTMLTextAreaElement>(null);
+export function PromptForm({ onSubmit, className, placeholder = "Type your message..." }: PromptFormProps) {
+  const [input, setInput] = useState('');
 
-    React.useImperativeHandle(ref, () => inputRef.current as HTMLTextAreaElement);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (input.trim()) {
+      onSubmit(input);
+      setInput('');
+    }
+  };
 
-    // Auto-resize the textarea based on content
-    React.useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.style.height = "inherit";
-        inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
-      }
-    }, [input]);
-
-    // Focus the textarea when the component mounts
-    React.useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, []);
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (input.trim()) {
-        onSubmit(input);
-        setInput("");
-        if (inputRef.current) {
-          inputRef.current.style.height = "inherit";
-        }
-      }
-    };
-
-    return (
-      <form
-        onSubmit={handleSubmit}
-        className={cn(
-          "relative flex items-end w-full max-w-3xl mx-auto",
-          className
-        )}
-      >
-        <Textarea
-          ref={inputRef}
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={cn('flex items-center space-x-2', className)}
+    >
+      <div className="relative flex-1">
+        <input
+          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about meal ideas, recipes, or grocery lists..."
-          className="min-h-12 resize-none py-3 pr-16 rounded-lg border border-input bg-background"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e);
-            }
-          }}
-          {...props}
+          placeholder={placeholder}
+          className="w-full rounded-full py-2 px-4 bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
         />
-        <div className="absolute right-2 bottom-2">
-          <Button 
-            type="submit" 
-            size="icon" 
-            disabled={input.trim().length === 0}
-            className="h-8 w-8 bg-primary text-primary-foreground"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <path d="m22 2-7 20-4-9-9-4 20-7Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-            <span className="sr-only">Send</span>
-          </Button>
-        </div>
-      </form>
-    );
-  }
-);
-
-PromptForm.displayName = "PromptForm";
+      </div>
+      <Button type="submit" size="icon" className="rounded-full">
+        <SendIcon className="h-4 w-4" />
+        <span className="sr-only">Send</span>
+      </Button>
+    </form>
+  );
+}
