@@ -10,7 +10,16 @@ import { useToast } from "@/components/ui/use-toast";
 const Index = () => {
   const { toast } = useToast();
   const [showMobilePanel, setShowMobilePanel] = React.useState<'chat' | 'recipes' | 'preferences'>('chat');
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   
+  const handleLogin = () => {
+    setIsLoggedIn(!isLoggedIn);
+    toast({
+      title: isLoggedIn ? "Logged out successfully" : "Logged in successfully",
+      description: isLoggedIn ? "Your session has been ended." : "Your preferences will be saved.",
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -63,14 +72,10 @@ const Index = () => {
             </Button>
             
             <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => {
-                toast({
-                  title: "Your preferences are saved",
-                  description: "Your dietary preferences and meal settings have been saved locally.",
-                })
-              }}
+              variant={isLoggedIn ? "default" : "outline"}
+              size="sm"
+              onClick={handleLogin}
+              className="flex items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,12 +85,12 @@ const Index = () => {
                 strokeWidth="2"
                 strokeLinejoin="round"
                 strokeLinecap="round"
-                className="w-5 h-5"
+                className="w-4 h-4"
               >
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <span className="sr-only">Account</span>
+              <span>{isLoggedIn ? "Logout" : "Login"}</span>
             </Button>
           </div>
         </div>
@@ -100,29 +105,27 @@ const Index = () => {
               <TabsTrigger value="recipes">Recipes</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
             </TabsList>
+            <TabsContent value="chat">
+              <ChatWindow />
+            </TabsContent>
+            <TabsContent value="recipes">
+              <div className="p-4">
+                <RecipeList />
+              </div>
+            </TabsContent>
+            <TabsContent value="preferences">
+              <div className="p-4">
+                <PreferencesSection />
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - Only visible on desktop */}
       <main className="flex-1 flex flex-col">
         <div className="hidden md:block">
           <ChatWindow />
-        </div>
-        
-        {/* Mobile Content */}
-        <div className="md:hidden flex-1 flex flex-col">
-          {showMobilePanel === 'chat' && <ChatWindow />}
-          {showMobilePanel === 'recipes' && (
-            <div className="flex-1 p-6 overflow-auto">
-              <RecipeList />
-            </div>
-          )}
-          {showMobilePanel === 'preferences' && (
-            <div className="flex-1 p-6 overflow-auto">
-              <PreferencesSection />
-            </div>
-          )}
         </div>
       </main>
       

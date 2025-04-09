@@ -6,6 +6,7 @@ import { AvatarIcon } from '@/components/ui/avatar-icon';
 import { cn } from '@/lib/utils';
 import { RecipeList } from './recipe-card';
 import { PreferencesSection } from './preference-selector';
+import { Button } from '@/components/ui/button';
 
 export type Message = {
   id: string;
@@ -30,8 +31,9 @@ interface ChatWindowProps {
 export function ChatWindow({ className }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [loading, setLoading] = useState(false);
-  const [showRecipes, setShowRecipes] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
+  const [showRecipes, setShowRecipes] = useState(true);
+  const [showPreferences, setShowPreferences] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +82,8 @@ export function ChatWindow({ className }: ChatWindowProps) {
       } else if (lowerValue.includes('preference') || lowerValue.includes('diet')) {
         setShowPreferences(true);
         responseText = "I've opened the preferences panel where you can select your dietary preferences, favorite cuisines, and allergies. This helps me recommend recipes tailored to your needs.";
+      } else if (lowerValue.includes('login') || lowerValue.includes('account')) {
+        responseText = "You can use the login button in the top right corner to sign in or create an account to save your preferences.";
       }
       
       const assistantMessage: Message = {
@@ -94,6 +98,11 @@ export function ChatWindow({ className }: ChatWindowProps) {
     }, 1000);
   };
 
+  // Login handler
+  const handleLogin = () => {
+    setIsLoggedIn(!isLoggedIn);
+  };
+
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (bottomRef.current) {
@@ -105,6 +114,16 @@ export function ChatWindow({ className }: ChatWindowProps) {
     <div className={cn('flex flex-col h-full max-w-5xl mx-auto px-4', className)}>
       <div className="flex-1 flex gap-6 overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex justify-end py-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleLogin} 
+              className="text-sm"
+            >
+              {isLoggedIn ? 'Logout' : 'Login'}
+            </Button>
+          </div>
           <ScrollArea className="flex-1 pr-4">
             <div className="flex flex-col space-y-5 py-4">
               {messages.map((message) => (
@@ -154,14 +173,12 @@ export function ChatWindow({ className }: ChatWindowProps) {
           </div>
         </div>
         
-        {(showRecipes || showPreferences) && (
-          <div className="hidden md:block w-80 border-l border-border pl-6 py-6 overflow-auto">
-            <div className="space-y-6">
-              {showPreferences && <PreferencesSection />}
-              {showRecipes && <RecipeList />}
-            </div>
+        <div className="hidden md:block w-80 border-l border-border pl-6 py-6 overflow-auto">
+          <div className="space-y-6">
+            {showPreferences && <PreferencesSection />}
+            {showRecipes && <RecipeList />}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
