@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ChatWindow } from '@/components/ui/chat-window';
@@ -6,18 +5,22 @@ import { RecipeList } from '@/components/ui/recipe-card';
 import { PreferencesSection } from '@/components/ui/preference-selector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from '@/App';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const { toast } = useToast();
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [showMobilePanel, setShowMobilePanel] = React.useState<'chat' | 'recipes' | 'preferences'>('chat');
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   
-  const handleLogin = () => {
-    setIsLoggedIn(!isLoggedIn);
+  const handleLogout = () => {
+    logout();
     toast({
-      title: isLoggedIn ? "Logged out successfully" : "Logged in successfully",
-      description: isLoggedIn ? "Your session has been ended." : "Your preferences will be saved."
+      title: "Logged out successfully",
+      description: "Your session has been ended."
     });
+    navigate('/auth');
   };
   
   return (
@@ -49,12 +52,12 @@ const Index = () => {
               <span className="sr-only">Tips</span>
             </Button>
             
-            <Button variant={isLoggedIn ? "default" : "outline"} size="sm" onClick={handleLogin} className="flex items-center gap-1 text-xs">
+            <Button variant="default" size="sm" onClick={handleLogout} className="flex items-center gap-1 text-xs">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" className="w-4 h-4">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              {isLoggedIn ? "Logout" : "Login"}
+              Logout
             </Button>
           </div>
         </div>
